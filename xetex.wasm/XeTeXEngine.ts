@@ -123,7 +123,7 @@ export class XeTeXEngine {
 					const formatURL = URL.createObjectURL(formatBlob);
 					setTimeout(() => { URL.revokeObjectURL(formatURL); }, 30000);
 					console.log('Download format file via ' + formatURL);
-					resolve();
+					resolve(undefined);
 				} else {
 					reject(log);
 				}
