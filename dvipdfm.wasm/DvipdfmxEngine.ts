@@ -45,7 +45,7 @@ export class DvipdfmxEngine {
                 const cmd: string = data.result as string;
                 if (cmd === 'ok') {
                     this.latexWorkerStatus = EngineStatus.Ready;
-                    resolve();
+                    resolve(undefined);
                 } else {
                     this.latexWorkerStatus = EngineStatus.Error;
                     reject();
