@@ -22,7 +22,7 @@ export enum EngineStatus {
 	Error
 }
 
-const ENGINE_PATH = 'swiftlatexxetex.js';
+const ENGINE_PATH = import.meta.resolve('./swiftlatexxetex.js', import.meta.url);
 
 export class CompileResult {
 	pdf: Uint8Array | undefined = undefined;

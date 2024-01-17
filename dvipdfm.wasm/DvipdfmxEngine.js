@@ -20,7 +20,7 @@ export var EngineStatus;
     EngineStatus[EngineStatus["Busy"] = 3] = "Busy";
     EngineStatus[EngineStatus["Error"] = 4] = "Error";
 })(EngineStatus || (EngineStatus = {}));
-const XDVPDFMX_ENGINE_PATH = 'swiftlatexdvipdfm.js';
+const XDVPDFMX_ENGINE_PATH = import.meta.resolve('./swiftlatexdvipdfm.js', import.meta.url);
 export class CompileResult {
     pdf = undefined;
     status = -254;

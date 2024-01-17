@@ -20,7 +20,7 @@ export var EngineStatus;
     EngineStatus[EngineStatus["Busy"] = 3] = "Busy";
     EngineStatus[EngineStatus["Error"] = 4] = "Error";
 })(EngineStatus || (EngineStatus = {}));
-const ENGINE_PATH = 'swiftlatexxetex.js';
+const ENGINE_PATH = import.meta.resolve('./swiftlatexxetex.js', import.meta.url);
 export class CompileResult {
     pdf = undefined;
     status = -254;
