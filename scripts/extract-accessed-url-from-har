@@ -1,0 +1,8 @@
+#!/bin/bash
+
+set -eu
+
+cd "$(dirname "$0")"/..
+har_file="$(readlink -f "$1")"
+
+jq -r .log.entries[].request.url < "$har_file" > tex-dependencies.txt
