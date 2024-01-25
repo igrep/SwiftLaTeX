@@ -29,6 +29,8 @@ XETEXSOURCES 	= 	xetexdir/XeTeXOTMath.cpp \
 					xetexdir/XeTeXFontMgr_FC.cpp xetexdir/hz.cpp \
 					xetexdir/pdfimage.cpp
 
+JSSOURCES = library.js pre.js
+
 TECKITSOURCES 	= 	teckit/teckit-Engine.cpp
 
 TEXOBJECTS 		= 	$(TEXSOURCES:%.c=$(BUILD_DIR)/%.o)
@@ -40,7 +42,7 @@ _default:
 
 all: $(PROJECT_NAME)
 
-$(PROJECT_NAME): $(TEXOBJECTS) $(XETEXOBJECTS) $(TECKITOBJECTS)
+$(PROJECT_NAME): $(TEXOBJECTS) $(XETEXOBJECTS) $(TECKITOBJECTS) $(JSSOURCES)
 	@$(LINKFLAG) $(TEXOBJECTS) $(XETEXOBJECTS) $(TECKITOBJECTS) xpdf/xpdf.a graphite2/libgraphite2.a harfbuzz/libharfbuzz.a && \
 	echo -e "\033[32m[DONE]\033[0m $(PROJECT_NAME)" || \
 	echo -e "\033[31m[ERROR]\033[0m $(PROJECT_NAME)"
