@@ -1,0 +1,5 @@
+#!/bin/bash
+
+cd "$(dirname "$0")"/../xetex.wasm
+
+make -e PRE_JS=lighter-pre.js

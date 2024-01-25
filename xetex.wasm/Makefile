@@ -3,14 +3,17 @@ CC 				= 	emcc
 CXX 			= 	em++
 DEBUGFLAGS 		= 	-O3
 
+LIBRARY_JS = library.js
+PRE_JS = pre.js
+
 CFLAGS 			= 	$(DEBUGFLAGS) -Wno-parentheses-equality -Wno-pointer-sign -DWEBASSEMBLY_BUILD \
 					-s USE_FREETYPE=1 -s USE_ICU=1 -s USE_LIBPNG=1 -fno-rtti -fno-exceptions
 
-LDFLAGS 		= 	$(DEBUGFLAGS) --js-library library.js \
+LDFLAGS 		= 	$(DEBUGFLAGS) --js-library $(LIBRARY_JS) \
 					-s USE_FREETYPE=1 \
 					-s USE_ICU=1 \
 					-s USE_LIBPNG=1 \
-					--pre-js pre.js \
+					--pre-js $(PRE_JS) \
 					-s EXPORTED_FUNCTIONS='["_compileBibtex", "_compileLaTeX", "_compileFormat", "_main", "_setMainEntry"]' -s NO_EXIT_RUNTIME=1 \
 					-s WASM=1 -s EXPORTED_RUNTIME_METHODS=["cwrap"] -s ALLOW_MEMORY_GROWTH=1
 
@@ -29,7 +32,7 @@ XETEXSOURCES 	= 	xetexdir/XeTeXOTMath.cpp \
 					xetexdir/XeTeXFontMgr_FC.cpp xetexdir/hz.cpp \
 					xetexdir/pdfimage.cpp
 
-JSSOURCES = library.js pre.js
+JSSOURCES = $(LIBRARY_JS) $(PRE_JS)
 
 TECKITSOURCES 	= 	teckit/teckit-Engine.cpp
 
