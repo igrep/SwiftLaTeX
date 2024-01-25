@@ -9,3 +9,4 @@ swiftlatexdvipdfm.wasm
 .texlive_tmp
 .DS_Store
 /tex-dependencies
+.tmp-added-tex-dependencies.txt

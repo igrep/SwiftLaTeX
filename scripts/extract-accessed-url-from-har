@@ -1,8 +1,29 @@
 #!/bin/bash
 
 set -eu
+set -o pipefail
+
+cmd="$1"
+har_file="$(readlink -f "$2")"
+
+extract_urls () {
+  jq -r .log.entries[].request.url < "$har_file" | tr -d '\r'
+}
 
 cd "$(dirname "$0")"/..
-har_file="$(readlink -f "$1")"
 
-jq -r .log.entries[].request.url < "$har_file" > tex-dependencies.txt
+case "$cmd" in
+  replace)
+    extract_urls | sort -u > tex-dependencies.txt
+    ;;
+  merge)
+    extract_urls > .tmp-added-tex-dependencies.txt
+    sort --unique tex-dependencies.txt .tmp-added-tex-dependencies.txt > .tmp-new-tex-dependencies.txt
+    mv .tmp-new-tex-dependencies.txt tex-dependencies.txt
+    rm .tmp-added-tex-dependencies.txt
+    ;;
+  *)
+    echo "Invalid command: '$cmd'"
+    exit 1
+    ;;
+esac
