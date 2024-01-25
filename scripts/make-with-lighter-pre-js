@@ -2,4 +2,4 @@
 
 cd "$(dirname "$0")"/../xetex.wasm
 
-make -e PRE_JS=lighter-pre.js
+make --assume-new lighter-pre.js -e PRE_JS=lighter-pre.js swiftlatexxetex.js
