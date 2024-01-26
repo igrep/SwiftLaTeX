@@ -1,0 +1,7 @@
+#!/bin/bash
+
+cd "$(dirname "$0")"/../
+
+PRE_JS=../our-pre.js
+make --directory xetex.wasm --assume-new "$PRE_JS" -e PRE_JS="$PRE_JS" swiftlatexxetex.js
+make --directory dvipdfm.wasm --assume-new "$PRE_JS" -e PRE_JS="$PRE_JS" swiftlatexdvipdfm.js

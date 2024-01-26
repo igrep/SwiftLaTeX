@@ -1,5 +1,0 @@
-#!/bin/bash
-
-cd "$(dirname "$0")"/../xetex.wasm
-
-make --assume-new lighter-pre.js -e PRE_JS=lighter-pre.js swiftlatexxetex.js

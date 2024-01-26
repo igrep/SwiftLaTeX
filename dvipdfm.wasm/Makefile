@@ -3,9 +3,13 @@ PROJECT_NAME 	:=	swiftlatexdvipdfm.js
 CC				=	emcc
 CXX				=	em++
 DEBUGFLAGS 		= 	-O3
+
+LIBRARY_JS = library.js
+PRE_JS = pre.js
+
 CFLAGS			= 	$(DEBUGFLAGS) -DHAVE_ZLIB -s USE_LIBPNG=1 -fno-rtti -fno-exceptions
-LDFLAGS 		=  	$(DEBUGFLAGS)  --js-library library.js  \
-  					-s USE_LIBPNG=1 --pre-js pre.js \
+LDFLAGS 		=  	$(DEBUGFLAGS)  --js-library $(LIBRARY_JS)  \
+  					-s USE_LIBPNG=1 --pre-js $(PRE_JS) \
  					-s EXPORTED_FUNCTIONS='["_compilePDF", "_setMainEntry", "_main"]' -s NO_EXIT_RUNTIME=1 \
   					-s WASM=1 -s ALLOW_MEMORY_GROWTH=1 -s EXPORTED_RUNTIME_METHODS=["cwrap"] -fno-rtti -fno-exceptions
 CXX_LINK 		= 	$(CXX) -o $@ $(LDFLAGS)
@@ -53,12 +57,14 @@ COBJECTS 		= 	$(CSOURCES:%.c=$(BUILD_DIR)/%.o)
 
 CPPOBJECTS 		= 	$(CPPSOURCES:%.cpp=$(BUILD_DIR)/%.o)
 
+JSSOURCES = $(LIBRARY_JS) $(PRE_JS)
+
 _default:
 	@$(MAKE) all --no-print-directory -j
 
 all: $(PROJECT_NAME)
 
-$(PROJECT_NAME): $(HEADERS) $(COBJECTS) $(CPPOBJECTS)
+$(PROJECT_NAME): $(HEADERS) $(COBJECTS) $(CPPOBJECTS) $(JSSOURCES)
 	@$(CXX_LINK) $(COBJECTS) $(CPPOBJECTS) && \
 	echo -e "\033[32m[DONE]\033[0m $(PROJECT_NAME)" || \
 	echo -e "\033[31m[ERROR]\033[0m $(PROJECT_NAME)"

@@ -1,4 +1,7 @@
-const TEXCACHEROOT = "/tex";
+// To avoid collisions with others, include a colon.
+const TEXCACHEROOT = "/tex:";
+
+const TEXCACHEROOT_SLASH = `${TEXCACHEROOT}/`;
 const WORKROOT = "/work";
 var Module = {};
 self.memlog = "";
@@ -154,6 +157,47 @@ function compileLaTeXRoutine() {
     }
 }
 
+function compilePDFRoutine() {
+    prepareExecutionContext();
+    const setMainFunction = cwrap('setMainEntry', 'number', ['string']);
+    setMainFunction(self.mainfile);
+    let status = _compilePDF();
+    if (status === 0) {
+        let pdfArrayBuffer = null;
+        try {
+            let pdfurl = WORKROOT + "/" + self.mainfile.substr(0, self.mainfile.length - 4) + ".pdf"
+            pdfArrayBuffer = FS.readFile(pdfurl, {
+                encoding: 'binary'
+            });
+        } catch (err) {
+            console.error("Fetch content failed.");
+            status = -253;
+            self.postMessage({
+                'result': 'failed',
+                'status': status,
+                'log': self.memlog,
+                'cmd': 'compile'
+            });
+            return;
+        }
+        self.postMessage({
+            'result': 'ok',
+            'status': status,
+            'log': self.memlog,
+            'pdf': pdfArrayBuffer.buffer,
+            'cmd': 'compile'
+        }, [pdfArrayBuffer.buffer]);
+    } else {
+        console.error("Compilation failed, with status code " + status);
+        self.postMessage({
+            'result': 'failed',
+            'status': status,
+            'log': self.memlog,
+            'cmd': 'compile'
+        });
+    }
+}
+
 function compileFormatRoutine() {
     prepareExecutionContext();
     let status = _compileFormat();
@@ -231,6 +275,8 @@ self['onmessage'] = function(ev) {
     let cmd = data['cmd'];
     if (cmd === 'compilelatex') {
     	compileLaTeXRoutine();
+    } else if (cmd === 'compilepdf') {
+        compilePDFRoutine();
     } else if (cmd === 'compileformat') {
         compileFormatRoutine();
     } else if (cmd === "settexliveurl") {
@@ -252,9 +298,14 @@ self['onmessage'] = function(ev) {
 };
 
 function kpse_find_file_impl(nameptr, _format, _mustexist) {
+    const name = UTF8ToString(nameptr);
+    if (FS.analyzePath(name).exists) {
+      return _allocate(intArrayFromString(name));
+    }
 
-    const reqname = UTF8ToString(nameptr);
-    const remote_url = `/tex-dependencies/${reqname}`;
+  const remoteName = name.startsWith(TEXCACHEROOT_SLASH) ? name.substr(TEXCACHEROOT_SLASH.length) : name
+
+    const remote_url = `/tex-dependencies/${remoteName}`;
     let xhr = new XMLHttpRequest();
     xhr.open("GET", remote_url, false);
     xhr.responseType = "arraybuffer";
@@ -267,7 +318,7 @@ function kpse_find_file_impl(nameptr, _format, _mustexist) {
 
     if (xhr.status === 200) {
         let arraybuffer = xhr.response;
-        const savepath = `${TEXCACHEROOT}/${reqname}`;
+        const savepath = `${TEXCACHEROOT}/${remoteName}`;
         FS.writeFile(savepath, new Uint8Array(arraybuffer));
         return _allocate(intArrayFromString(savepath));
     } else {
