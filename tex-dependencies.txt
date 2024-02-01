@@ -19,6 +19,8 @@ https://texlive2.swiftlatex.com/xetex/26/bxjsja-standard.def
 https://texlive2.swiftlatex.com/xetex/26/bxwareki-cd.def
 https://texlive2.swiftlatex.com/xetex/26/bxwareki.sty
 https://texlive2.swiftlatex.com/xetex/26/calc.sty
+https://texlive2.swiftlatex.com/xetex/26/color.cfg
+https://texlive2.swiftlatex.com/xetex/26/color.sty
 https://texlive2.swiftlatex.com/xetex/26/etexcmds.sty
 https://texlive2.swiftlatex.com/xetex/26/everysel.sty
 https://texlive2.swiftlatex.com/xetex/26/expl3.sty
