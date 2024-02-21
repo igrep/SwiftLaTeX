@@ -63,7 +63,6 @@ export class DvipdfmxEngine {
     }
     async compilePDF() {
         this.checkEngineStatus();
-        this.latexWorkerStatus = EngineStatus.Busy;
         const start_compile_time = performance.now();
         const res = await new Promise((resolve, _) => {
             this.latexWorker.onmessage = (ev) => {
@@ -71,18 +70,14 @@ export class DvipdfmxEngine {
                 const cmd = data.cmd;
                 if (cmd !== 'compile')
                     return;
-                const result = data.result;
                 const log = data.log;
                 const status = data.status;
-                this.latexWorkerStatus = EngineStatus.Ready;
                 console.log('Engine compilation finish ' + (performance.now() - start_compile_time));
                 const nice_report = new CompileResult();
                 nice_report.status = status;
                 nice_report.log = log;
-                if (result === 'ok') {
-                    const pdf = new Uint8Array(data.pdf);
-                    nice_report.pdf = pdf;
-                }
+                const pdf = new Uint8Array(data.pdf);
+                nice_report.pdf = pdf;
                 resolve(nice_report);
             };
             this.latexWorker.postMessage({ cmd: 'compilepdf' });

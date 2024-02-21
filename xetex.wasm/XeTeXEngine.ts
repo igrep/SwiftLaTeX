@@ -74,25 +74,20 @@ export class XeTeXEngine {
 
 	public async compileLaTeX(): Promise<CompileResult> {
 		this.checkEngineStatus();
-		this.latexWorkerStatus = EngineStatus.Busy;
 		const start_compile_time = performance.now();
 		const res: CompileResult = await new Promise((resolve, _) => {
 			this.latexWorker!.onmessage = (ev: any) => {
 				const data: any = ev['data'];
 				const cmd: string = data['cmd'] as string;
 				if (cmd !== "compile") return;
-				const result: string = data['result'] as string;
 				const log: string = data['log'] as string;
 				const status: number = data['status'] as number;
-				this.latexWorkerStatus = EngineStatus.Ready;
 				console.log('Engine compilation finish ' + (performance.now() - start_compile_time));
 				const nice_report = new CompileResult();
 				nice_report.status = status;
 				nice_report.log = log;
-				if (result === 'ok') {
-					const pdf: Uint8Array = new Uint8Array(data['pdf']);
-					nice_report.pdf = pdf;
-				}
+				const pdf: Uint8Array = new Uint8Array(data['pdf']);
+				nice_report.pdf = pdf;
 				resolve(nice_report);
 			};
 			this.latexWorker!.postMessage({ 'cmd': 'compilelatex' });

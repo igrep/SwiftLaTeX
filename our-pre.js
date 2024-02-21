@@ -119,42 +119,31 @@ function compileLaTeXRoutine() {
     const setMainFunction = cwrap('setMainEntry', 'number', ['string']);
     setMainFunction(self.mainfile);
     
-    let status = _compileLaTeX();
-    if (status === 0) {
-        let pdfArrayBuffer = null;
-        _compileBibtex();
-        let pdfurl = WORKROOT + "/" + self.mainfile.substr(0, self.mainfile.length - 4) + ".xdv";
-        try {
-            pdfArrayBuffer = FS.readFile(pdfurl, {
-                encoding: 'binary'
-            });
-        } catch (err) {
-            console.error("Fetch content failed. " + pdfurl);
-            status = -253;
-            self.postMessage({
-                'result': 'failed',
-                'status': status,
-                'log': self.memlog,
-                'cmd': 'compile'
-            });
-            return;
-        }
-        self.postMessage({
-            'result': 'ok',
-            'status': status,
-            'log': self.memlog,
-            'pdf': pdfArrayBuffer.buffer,
-            'cmd': 'compile'
-        }, [pdfArrayBuffer.buffer]);
-    } else {
-        console.error("Compilation failed, with status code " + status);
+    _compileLaTeX();
+    let pdfArrayBuffer = null;
+    const status = _compileBibtex();
+    let pdfurl = WORKROOT + "/" + self.mainfile.substr(0, self.mainfile.length - 4) + ".xdv";
+    try {
+        pdfArrayBuffer = FS.readFile(pdfurl, {
+            encoding: 'binary'
+        });
+    } catch (err) {
+        console.error("Fetch content failed. " + pdfurl);
         self.postMessage({
             'result': 'failed',
-            'status': status,
+            'status': -253,
             'log': self.memlog,
             'cmd': 'compile'
         });
+        return;
     }
+    self.postMessage({
+        'result': 'ok',
+        'status': status,
+        'log': self.memlog,
+        'pdf': pdfArrayBuffer.buffer,
+        'cmd': 'compile'
+    }, [pdfArrayBuffer.buffer]);
 }
 
 function compilePDFRoutine() {
