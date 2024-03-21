@@ -20,6 +20,9 @@ async function skipIfAlreadyExists(name, body) {
   }
 }
 
+/** @type {string[]} */
+const availableTexDependencies = [];
+
 for (const line of lines) {
   const url = line.trim();
   if (!url) {
@@ -48,4 +51,12 @@ for (const line of lines) {
       await symlink(name, urlBasename);
     });
   }
+
+  availableTexDependencies.push(urlBasename);
 }
+
+await writeFile(
+  "../available-tex-dependencies.json",
+  JSON.stringify(availableTexDependencies),
+  "utf-8",
+);

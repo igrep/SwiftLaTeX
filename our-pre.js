@@ -1,3 +1,21 @@
+/** @type {Set<string> | null} */
+let CACHED_TEX_DEPENDENCIES = null;
+async function rememberCachedTexDependencies() {
+  if (CACHED_TEX_DEPENDENCIES !== null) {
+    return;
+  }
+
+  const res = await fetch("/available-tex-dependencies.json");
+  if (!res.ok) {
+    console.error("Failed to fetch available-tex-dependencies.json");
+    console.error(await res.text());
+    return;
+  }
+
+  CACHED_TEX_DEPENDENCIES = new Set(await res.json());
+}
+void rememberCachedTexDependencies();
+
 // To avoid collisions with others, include a colon.
 const TEXCACHEROOT = "/tex:";
 
@@ -305,16 +323,18 @@ function kpse_find_file_impl(nameptr, _format, _mustexist) {
 
   const remoteName = name.startsWith(TEXCACHEROOT_SLASH) ? name.substr(TEXCACHEROOT_SLASH.length) : name
 
+  if (CACHED_TEX_DEPENDENCIES === null) {
+    throw new Error("Assertion failed: CACHED_TEX_DEPENDENCIES uninitialized!");
+  }
+  if (!CACHED_TEX_DEPENDENCIES.has(remoteName)) {
+    return 0;
+  }
+
     const remote_url = `/tex-dependencies/${remoteName}`;
     let xhr = new XMLHttpRequest();
     xhr.open("GET", remote_url, false);
     xhr.responseType = "arraybuffer";
-    try {
         xhr.send();
-    } catch (err) {
-        console.warn(`Failed to download ${remote_url}`, err);
-        return 0;
-    }
 
     if (xhr.status === 200) {
         let arraybuffer = xhr.response;
